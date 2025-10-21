@@ -9,7 +9,7 @@ Reset the apps/content-gen application to a clean starter state with fresh backe
 
 ## Codebase Structure
 
-```
+```text
 apps/content-gen/
 ├── backend/          # Python FastAPI backend (will be reset)
 ├── frontend/         # Vue TypeScript frontend (will be reset)
@@ -36,35 +36,42 @@ apps/content-gen/
 ## Workflow
 
 ### Step 1: Safety verification
+
 Confirm we're in the correct working directory:
+
 ```bash
 pwd
 # Should output: .../voice-to-agents/apps/content-gen
 ```
 
 ### Step 2: Remove existing backend and frontend
+
 **CRITICAL: Use exact full paths**
+
 ```bash
-rm -rf /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/backend
-rm -rf /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/frontend
+rm -rf /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/backend
+rm -rf /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/frontend
 ```
 
 ### Step 3: Clear specs and agents directories
+
 ```bash
-rm -rf /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/specs/*
-rm -rf /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/agents/*
+rm -rf /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/specs/*
+rm -rf /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/agents/*
 ```
 
 ### Step 4: Initialize fresh backend with FastAPI
+
 ```bash
-cd /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen
+cd /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen
 mkdir -p backend/src/content_gen_backend
 cd backend
 uv init --name content-gen-backend --no-readme
 ```
 
 The structure should now be:
-```
+
+```text
 backend/
 ├── pyproject.toml
 └── src/
@@ -72,6 +79,7 @@ backend/
 ```
 
 Create `src/content_gen_backend/main.py` with FastAPI health check:
+
 ```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -94,43 +102,50 @@ async def health_check():
 ```
 
 Add FastAPI dependency:
+
 ```bash
 uv add fastapi uvicorn[standard]
 ```
 
 ### Step 5: Initialize fresh frontend with Vite + Vue + TypeScript
+
 ```bash
-cd /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen
+cd /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen
 npm create vite@latest frontend -- --template vue-ts
 cd frontend
 npm install
 ```
 
 ### Step 6: Reset main README.md
+
 ```bash
-cd /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen
+cd /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen
 ```
 
 Create fresh README.md:
-```markdown
+
+````markdown
 # Content Generation Application
 
 > Voice-based agentic coding experiment sandbox
 
 ## Codebase Structure
 
+```text
+
+backend/ # FastAPI backend service
+frontend/ # Vue + TypeScript frontend
+specs/ # Project specifications
+agents/ # Agent working directory
+ai_docs/ # AI documentation
+.claude/ # Claude Code configuration
 ```
-backend/          # FastAPI backend service
-frontend/         # Vue + TypeScript frontend
-specs/            # Project specifications
-agents/           # Agent working directory
-ai_docs/          # AI documentation
-.claude/          # Claude Code configuration
-```
+````
 
 ## Quick Start
 
 ### Start Both Services (Recommended)
+
 ```bash
 ./start.sh
 ```
@@ -138,6 +153,7 @@ ai_docs/          # AI documentation
 ### Or Start Individually
 
 **Backend:**
+
 ```bash
 cd backend
 uv sync
@@ -145,6 +161,7 @@ uv run uvicorn src.content_gen_backend.main:app --reload --port 4444
 ```
 
 **Frontend:**
+
 ```bash
 cd frontend
 npm install
@@ -153,6 +170,7 @@ npm run dev -- --port 3333
 
 ## Services
 
+```text
 - Backend: http://localhost:4444
 - Frontend: http://localhost:3333
 - Health Check: http://localhost:4444/health
@@ -161,9 +179,11 @@ npm run dev -- --port 3333
 Save this to README.md.
 
 ### Step 7: Ensure start.sh exists
+
 Check if start.sh exists, and create it if missing:
+
 ```bash
-cd /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen
+cd /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen
 
 if [ ! -f start.sh ]; then
     echo "Creating start.sh..."
@@ -220,30 +240,33 @@ fi
 ```
 
 ### Step 8: Verify the reset
+
 Run these verification commands:
+
 ```bash
 # Verify backend exists and has health endpoint
-ls -la /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/backend/src/content_gen_backend/main.py
+ls -la /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/backend/src/content_gen_backend/main.py
 
 # Verify frontend exists with Vite setup
-ls -la /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/frontend/vite.config.ts
+ls -la /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/frontend/vite.config.ts
 
 # Verify specs and agents are empty
-ls -la /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/specs/
-ls -la /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/agents/
+ls -la /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/specs/
+ls -la /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/agents/
 
 # Verify preserved directories still exist
-ls -la /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/ai_docs/
-ls -la /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/.claude/
+ls -la /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/ai_docs/
+ls -la /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/.claude/
 
 # Verify start.sh exists and is executable
-ls -lah /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/start.sh
+ls -lah /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/start.sh
 
 # Verify README.md was updated
-cat /Users/indydevdan/Documents/projects/experimental/voice-to-agents/apps/content-gen/README.md
+cat /Users/andre/Documents/projects/experimental/voice-to-agents/apps/content-gen/README.md
 ```
 
 ### Step 9: Copy .env into backend
+
 > CD back into application root directory and copy .env.ready into backend directory
 
 ```bash

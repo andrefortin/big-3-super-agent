@@ -61,10 +61,10 @@ def get_git_branch():
     """Get current git branch if in a git repository."""
     try:
         result = subprocess.run(
-            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
             capture_output=True,
             text=True,
-            timeout=2
+            timeout=2,
         )
         if result.returncode == 0:
             return result.stdout.strip()
@@ -78,15 +78,12 @@ def get_git_status():
     try:
         # Check if there are uncommitted changes
         result = subprocess.run(
-            ['git', 'status', '--porcelain'],
-            capture_output=True,
-            text=True,
-            timeout=2
+            ["git", "status", "--porcelain"], capture_output=True, text=True, timeout=2
         )
         if result.returncode == 0:
             changes = result.stdout.strip()
             if changes:
-                lines = changes.split('\n')
+                lines = changes.split("\n")
                 return f"±{len(lines)}"
     except Exception:
         pass
@@ -166,7 +163,7 @@ def generate_status_line(input_data):
 
     # Model name - Blue
     parts.append(f"\033[34m[{model_name}]\033[0m")
-    
+
     # Git branch and status - green
     git_branch = get_git_branch()
     if git_branch:

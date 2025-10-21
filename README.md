@@ -1,12 +1,13 @@
 # Big Three Realtime Agents
-> Voice agent (OpenAI Realtime API) that orchestrates coding agents (Claude Code) and browser agents (Gemini Computer Use)
-> 
-> **See this codebase in action [here](https://youtu.be/Ur3TJm0BckQ)**
-> 
 
-<img src="images/big-3-super-agent.png" alt="Big Three Super Agent" style="max-width: 800px; width: 100%;">
+> Voice agent (OpenAI Realtime API) that orchestrates coding agents (Claude Code) and browser agents (Gemini Computer Use)
+>
+> **See this codebase in action [here](https://youtu.be/Ur3TJm0BckQ)**
+
+![Big Three Super Agent](images/big-3-super-agent.png)
 
 A unified voice-controlled orchestrator that coordinates three types of AI agents:
+
 1. **OpenAI Realtime Voice Agent** - Natural voice interactions and orchestration
 2. **Claude Code Agentic Coder** - Software development and file operations
 3. **Gemini Browser Agent** - Web automation and validation
@@ -19,6 +20,7 @@ A unified voice-controlled orchestrator that coordinates three types of AI agent
 - **Playwright**: For browser automation (`playwright install` after setup)
 
 Install `uv` if you don't have it:
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
@@ -26,11 +28,13 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ## Setup
 
 ### 1. Clone and Navigate
+
 ```bash
 cd apps/realtime-poc
 ```
 
 ### 2. Configure Environment
+
 Copy `.env.sample` to `.env` and fill in required values:
 
 ```bash
@@ -50,11 +54,13 @@ AGENT_WORKING_DIRECTORY=        # Leave empty to use default (apps/content-gen)
 ```
 
 ### 3. Install Playwright
+
 ```bash
 playwright install
 ```
 
 ### 4. Run
+
 ```bash
 # Voice mode (recommended for full experience)
 uv run big_three_realtime_agents.py --voice
@@ -108,7 +114,8 @@ graph TD
 ## Key Directories & Files
 
 ### Project Structure
-```
+
+```text
 big-3-super-agent/
 ├── .env.sample                 # Environment template
 ├── apps/
@@ -130,6 +137,7 @@ big-3-super-agent/
 ### Important Files
 
 - **`big_three_realtime_agents.py`**: Main orchestrator script (3000+ lines)
+
   - Line 184-616: `GeminiBrowserAgent` class
   - Line 617-1540: `ClaudeCodeAgenticCoder` class
   - Line 1541-2900: `OpenAIRealtimeVoiceAgent` class
@@ -142,14 +150,18 @@ big-3-super-agent/
 ## How It Works
 
 ### 1. Voice Orchestration
+
 The OpenAI Realtime Voice Agent acts as the main orchestrator:
+
 - Listens to user voice/text input
 - Decides which agent type to use
 - Dispatches tasks via tool calls
 - Manages agent lifecycle (create, resume, list, delete)
 
 ### 2. Agent Working Directory
+
 Agents are pointed to a specific working directory:
+
 ```python
 AGENT_WORKING_DIRECTORY = Path(__file__).parent.parent / "content-gen"
 ```
@@ -159,7 +171,9 @@ AGENT_WORKING_DIRECTORY = Path(__file__).parent.parent / "content-gen"
 - **Registries**: Each agent type has a registry file tracking active sessions
 
 ### 3. Tool-Based Dispatch
+
 The orchestrator exposes these tools to the voice agent:
+
 - `list_agents()` - Query all active agents and their status
 - `create_agent(tool, type, agent_name)` - Create a new agent (Claude Code or Gemini)
 - `command_agent(agent_name, prompt)` - Send instructions to an existing agent
@@ -171,6 +185,7 @@ The orchestrator exposes these tools to the voice agent:
 - `report_costs()` - Get API usage and cost information
 
 ### 4. Session Management
+
 - Each agent gets a unique session ID
 - Sessions stored in registry JSON files
 - Sessions can be resumed across voice interactions
@@ -199,6 +214,7 @@ This project includes built-in observability for tracking all agent activities i
 ### Quick Start
 
 1. Clone and run the observability server:
+
    ```bash
    git clone https://github.com/disler/claude-code-hooks-multi-agent-observability
    cd claude-code-hooks-multi-agent-observability
@@ -206,6 +222,7 @@ This project includes built-in observability for tracking all agent activities i
    ```
 
 2. Start the agents (observability is already configured):
+
    ```bash
    uv run big_three_realtime_agents.py --voice
    ```
@@ -213,6 +230,7 @@ This project includes built-in observability for tracking all agent activities i
 3. Open the dashboard at `http://localhost:3000`
 
 Events automatically flow from:
+
 - Claude Code agent tool calls (PreToolUse, PostToolUse)
 - Voice orchestrator decisions
 - Gemini browser actions
@@ -269,9 +287,9 @@ This project is powered by cutting-edge AI technologies:
 ---
 
 ## Master AI **Agentic Coding**
+
 > And prepare for the future of software engineering
 
 Learn tactical agentic coding patterns with [Tactical Agentic Coding](https://agenticengineer.com/tactical-agentic-coding)
 
 Follow the [IndyDevDan YouTube channel](https://www.youtube.com/@indydevdan) to improve your agentic coding advantage.
-
