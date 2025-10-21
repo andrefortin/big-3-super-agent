@@ -1,23 +1,20 @@
-Video generation with Sora
-==========================
+# Video generation with Sora
 
 Create, iterate on, and manage videos with the Sora API.
 
-Overview
---------
+## Overview
 
 Sora is OpenAI’s newest frontier in generative media – a state-of-the-art video model capable of creating richly detailed, dynamic clips with audio from natural language or images. Built on years of research into multimodal diffusion and trained on diverse visual data, Sora brings a deep understanding of 3D space, motion, and scene continuity to text-to-video generation.
 
 The [Video API](/docs/api-reference/videos) exposes these capabilities to developers for the first time, enabling programmatic creation, extension, and remixing of videos. It provides five endpoints, each with distinct capabilities:
 
-*   **Create video**: Start a new render job from a prompt, with optional reference inputs or a remix ID.
-*   **Get video status**: Retrieve the current state of a render job and monitor its progress.
-*   **Download video**: Fetch the finished MP4 once the job is completed.
-*   **List videos**: Enumerate your videos with pagination for history, dashboards, or housekeeping.
-*   **Delete videos**: Remove an individual video ID from OpenAI’s storage.
+- **Create video**: Start a new render job from a prompt, with optional reference inputs or a remix ID.
+- **Get video status**: Retrieve the current state of a render job and monitor its progress.
+- **Download video**: Fetch the finished MP4 once the job is completed.
+- **List videos**: Enumerate your videos with pagination for history, dashboards, or housekeeping.
+- **Delete videos**: Remove an individual video ID from OpenAI’s storage.
 
-Models
-------
+## Models
 
 The second generation Sora model comes in two variants, each tailored for different use cases.
 
@@ -33,17 +30,13 @@ It generates good quality results quickly, making it well suited for rapid itera
 
 `sora-2-pro` takes longer to render and is more expensive to run, but it produces more polished, stable results. It’s best for high-resolution cinematic footage, marketing assets, and any situation where visual precision is critical.
 
-Generate a video
-----------------
+## Generate a video
 
 Generating a video is an **asynchronous** process:
 
 1.  When you call the `POST /videos` endpoint, the API returns a job object with a job `id` and an initial `status`.
-    
 2.  You can either poll the `GET /videos/{video_id}` endpoint until the status transitions to completed, or – for a more efficient approach – use webhooks (see the webhooks section below) to be notified automatically when the job finishes.
-    
 3.  Once the job has reached the `completed` state you can fetch the final MP4 file with `GET /videos/{video_id}/content`.
-    
 
 ### Start a render job
 
@@ -52,16 +45,16 @@ Start by calling `POST /videos` with a text prompt and the required parameters. 
 Create a video
 
 ```javascript
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const openai = new OpenAI();
 
 let video = await openai.videos.create({
-    model: 'sora-2',
-    prompt: "A video of the words 'Thank you' in sparkling letters",
+  model: "sora-2",
+  prompt: "A video of the words 'Thank you' in sparkling letters",
 });
 
-console.log('Video generation started: ', video);
+console.log("Video generation started: ", video);
 ```
 
 ```python
@@ -106,10 +99,10 @@ The response is a JSON object with a unique id and an initial status such as `qu
 
 The API enforces several content restrictions:
 
-*   Only content suitable for audiences under 18 (a setting to bypass this restriction will be available in the future).
-*   Copyrighted characters and copyrighted music will be rejected.
-*   Real people—including public figures—cannot be generated.
-*   Input images with faces of humans are currently rejected.
+- Only content suitable for audiences under 18 (a setting to bypass this restriction will be available in the future).
+- Copyrighted characters and copyrighted music will be rejected.
+- Real people—including public figures—cannot be generated.
+- Input images with faces of humans are currently rejected.
 
 Make sure prompts, reference images, and transcripts respect these rules to avoid failed generations.
 
@@ -117,8 +110,8 @@ Make sure prompts, reference images, and transcripts respect these rules to avoi
 
 For best results, describe **shot type, subject, action, setting, and lighting**. For example:
 
-*   _“Wide shot of a child flying a red kite in a grassy park, golden hour sunlight, camera slowly pans upward.”_
-*   _“Close-up of a steaming coffee cup on a wooden table, morning light through blinds, soft depth of field.”_
+- _“Wide shot of a child flying a red kite in a grassy park, golden hour sunlight, camera slowly pans upward.”_
+- _“Close-up of a steaming coffee cup on a wooden table, morning light through blinds, soft depth of field.”_
 
 This level of specificity helps the model produce consistent results without inventing unwanted details. For more advanced prompting techniques, please refer to our dedicated Sora 2 [prompting guide](https://cookbook.openai.com/examples/sora/sora2_prompting_guide).
 
@@ -137,20 +130,20 @@ Typical states are `queued`, `in_progress`, `completed`, and `failed`. Poll at a
 Poll the status endpoint
 
 ```javascript
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const openai = new OpenAI();
 
 async function main() {
   const video = await openai.videos.createAndPoll({
-    model: 'sora-2',
+    model: "sora-2",
     prompt: "A video of the words 'Thank you' in sparkling letters",
   });
 
-  if (video.status === 'completed') {
-    console.log('Video successfully completed: ', video);
+  if (video.status === "completed") {
+    console.log("Video successfully completed: ", video);
   } else {
-    console.log('Video creation failed. Status: ', video.status);
+    console.log("Video creation failed. Status: ", video.status);
   }
 }
 
@@ -222,54 +215,54 @@ Once the job reaches status `completed`, fetch the MP4 with `GET /videos/{video_
 Download the MP4
 
 ```javascript
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const openai = new OpenAI();
 
 let video = await openai.videos.create({
-    model: 'sora-2',
-    prompt: "A video of the words 'Thank you' in sparkling letters",
+  model: "sora-2",
+  prompt: "A video of the words 'Thank you' in sparkling letters",
 });
 
-console.log('Video generation started: ', video);
+console.log("Video generation started: ", video);
 let progress = video.progress ?? 0;
 
-while (video.status === 'in_progress' || video.status === 'queued') {
-    video = await openai.videos.retrieve(video.id);
-    progress = video.progress ?? 0;
+while (video.status === "in_progress" || video.status === "queued") {
+  video = await openai.videos.retrieve(video.id);
+  progress = video.progress ?? 0;
 
-    // Display progress bar
-    const barLength = 30;
-    const filledLength = Math.floor((progress / 100) * barLength);
-    // Simple ASCII progress visualization for terminal output
-    const bar = '='.repeat(filledLength) + '-'.repeat(barLength - filledLength);
-    const statusText = video.status === 'queued' ? 'Queued' : 'Processing';
+  // Display progress bar
+  const barLength = 30;
+  const filledLength = Math.floor((progress / 100) * barLength);
+  // Simple ASCII progress visualization for terminal output
+  const bar = "=".repeat(filledLength) + "-".repeat(barLength - filledLength);
+  const statusText = video.status === "queued" ? "Queued" : "Processing";
 
-    process.stdout.write(`${statusText}: [${bar}] ${progress.toFixed(1)}%`);
+  process.stdout.write(`${statusText}: [${bar}] ${progress.toFixed(1)}%`);
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 }
 
 // Clear the progress line and show completion
-process.stdout.write('\n');
+process.stdout.write("\n");
 
-if (video.status === 'failed') {
-    console.error('Video generation failed');
-    return;
+if (video.status === "failed") {
+  console.error("Video generation failed");
+  return;
 }
 
-console.log('Video generation completed: ', video);
+console.log("Video generation completed: ", video);
 
-console.log('Downloading video content...');
+console.log("Downloading video content...");
 
 const content = await openai.videos.downloadContent(video.id);
 
 const body = content.arrayBuffer();
 const buffer = Buffer.from(await body);
 
-require('fs').writeFileSync('video.mp4', buffer);
+require("fs").writeFileSync("video.mp4", buffer);
 
-console.log('Wrote video.mp4');
+console.log("Wrote video.mp4");
 ```
 
 ```bash
@@ -347,8 +340,7 @@ curl -L "https://api.openai.com/v1/videos/video_abc123/content?variant=spriteshe
   --output spritesheet.jpg
 ```
 
-Use image references
---------------------
+## Use image references
 
 You can guide a generation with an input image, which acts as **the first frame of your video**. This is useful if you need the output video to preserve the look of a brand asset, a character, or a specific environment. Include an image file as the `input_reference` parameter in your `POST /videos` request. The image must match the target video’s resolution (`size`).
 
@@ -370,8 +362,7 @@ curl -X POST "https://api.openai.com/v1/videos" \
 | Download this image                         | Prompt: “She turns around and smiles, then slowly walks out of the frame.”      |
 | Download this image                         | Prompt: “The fridge door opens. A cute, chubby purple monster comes out of it.” |
 
-Remix completed videos
-----------------------
+## Remix completed videos
 
 Remix lets you **take an existing video and make targeted adjustments** without regenerating everything from scratch. Provide the `remix_video_id` of a completed job along with a new prompt that describes the change, and the system reuses the original’s structure, continuity, and composition while applying the modification. This works best when you make a **single, well-defined change** because smaller, focused edits preserve more of the original fidelity and reduce the risk of introducing artifacts.
 
@@ -391,8 +382,7 @@ Remix is especially valuable for iteration because it lets you refine without di
 |                | Prompt: “Change the color of the monster to orange.” |
 |                | Prompt: “A second monster comes out right after.”    |
 
-Maintain your library
----------------------
+## Maintain your library
 
 Use `GET /videos` to enumerate your videos. The endpoint supports optional query parameters for pagination and sorting.
 
@@ -417,7 +407,7 @@ curl -X DELETE "https://api.openai.com/v1/videos/[REPLACE_WITH_YOUR_VIDEO_ID]" \
 
 Create video
 post
- 
+
 https://api.openai.com/v1/videos
 Create a video
 
@@ -460,24 +450,24 @@ from openai import OpenAI
 
 client = OpenAI()
 video = client.videos.create(
-    prompt="A calico cat playing a piano on stage",
+prompt="A calico cat playing a piano on stage",
 )
 print(video.id)
 Response
 {
-  "id": "video_123",
-  "object": "video",
-  "model": "sora-2",
-  "status": "queued",
-  "progress": 0,
-  "created_at": 1712697600,
-  "size": "1024x1808",
-  "seconds": "8",
-  "quality": "standard"
+"id": "video_123",
+"object": "video",
+"model": "sora-2",
+"status": "queued",
+"progress": 0,
+"created_at": 1712697600,
+"size": "1024x1808",
+"seconds": "8",
+"quality": "standard"
 }
 Remix video
 post
- 
+
 https://api.openai.com/v1/videos/{video_id}/remix
 Create a video remix
 
@@ -503,25 +493,25 @@ from openai import OpenAI
 
 client = OpenAI()
 video = client.videos.remix(
-    video_id="video_123",
-    prompt="Extend the scene with the cat taking a bow to the cheering audience",
+video_id="video_123",
+prompt="Extend the scene with the cat taking a bow to the cheering audience",
 )
 print(video.id)
 Response
 {
-  "id": "video_456",
-  "object": "video",
-  "model": "sora-2",
-  "status": "queued",
-  "progress": 0,
-  "created_at": 1712698600,
-  "size": "720x1280",
-  "seconds": "8",
-  "remixed_from_video_id": "video_123"
+"id": "video_456",
+"object": "video",
+"model": "sora-2",
+"status": "queued",
+"progress": 0,
+"created_at": 1712698600,
+"size": "720x1280",
+"seconds": "8",
+"remixed_from_video_id": "video_123"
 }
 List videos
 get
- 
+
 https://api.openai.com/v1/videos
 List videos
 
@@ -556,19 +546,19 @@ page = page.data[0]
 print(page.id)
 Response
 {
-  "data": [
-    {
-      "id": "video_123",
-      "object": "video",
-      "model": "sora-2",
-      "status": "completed"
-    }
-  ],
-  "object": "list"
+"data": [
+{
+"id": "video_123",
+"object": "video",
+"model": "sora-2",
+"status": "completed"
+}
+],
+"object": "list"
 }
 Retrieve video
 get
- 
+
 https://api.openai.com/v1/videos/{video_id}
 Retrieve a video
 
@@ -587,12 +577,12 @@ from openai import OpenAI
 
 client = OpenAI()
 video = client.videos.retrieve(
-    "video_123",
+"video_123",
 )
 print(video.id)
 Delete video
 delete
- 
+
 https://api.openai.com/v1/videos/{video_id}
 Delete a video
 
@@ -611,12 +601,12 @@ from openai import OpenAI
 
 client = OpenAI()
 video = client.videos.delete(
-    "video_123",
+"video_123",
 )
 print(video.id)
 Retrieve video content
 get
- 
+
 https://api.openai.com/v1/videos/{video_id}/content
 Download video content
 
@@ -642,7 +632,7 @@ from openai import OpenAI
 
 client = OpenAI()
 response = client.videos.download_content(
-    video_id="video_123",
+video_id="video_123",
 )
 print(response)
 content = response.read()
@@ -664,7 +654,6 @@ error
 object
 
 Error payload that explains why generation failed, if applicable.
-
 
 Show properties
 expires_at

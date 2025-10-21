@@ -28,6 +28,7 @@ USER_PROMPT: $1
 - IMPORTANT: Flow through each step in the workflow in order, top to bottom. Only waiting for the previous step to complete before starting the next step. Do not stop in between steps. Complete every step in the workflow before stopping.
 
 ## Workflow
+
 > Run the workflow in order, top to bottom. Do not stop in between steps. Complete every step in the workflow before stopping.
 
 1. Run SlashCommand(`/scout "[USER_PROMPT]" "4"`) -> `relevant_files_collection_path`
